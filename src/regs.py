@@ -1,10 +1,3 @@
-from enum import Enum
-
-# No support for XMM/YMM registers, yet
-MAX_ALLOWED_READ_SIZE = 8
-PAGE_SIZE = 0x1000
-LARGE_PAGE_SIZE = 0x200000
-
 class Registers(Enum):
     REG_RAX = 0
     REG_RCX = 1
