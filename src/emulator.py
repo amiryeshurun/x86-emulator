@@ -4,7 +4,7 @@ from memory import *
 import paging
 
 class Emulator:
-    def __init__(self, cpu_count=1, physical_memory_size=LARGE_PAGE_SIZE):
+    def __init__(self, cpu_count=1, physical_memory_size=TWO_MB_LARGE_PAGE_SIZE):
         self.processors = []
         self.memory = Memory(physical_memory_size)
         for i in range(0, cpu_count):

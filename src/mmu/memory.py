@@ -2,7 +2,7 @@ from mmu.x86_mem_constants import *
 from x86_exceptions import AddressOutOfRange
 
 class Memory:
-    def __init__(self, fixed_size=LARGE_PAGE_SIZE):
+    def __init__(self, fixed_size=TWO_MB_LARGE_PAGE_SIZE):
         self.size = fixed_size
         self.physical_memory = bytearray(fixed_size)
     
