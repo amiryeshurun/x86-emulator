@@ -16,11 +16,24 @@ class AddressOutOfRange(Exception):
 
 class InvalidCr0Combination(Exception):
     def __init__(self, msg: str):
-        self.message = "Invalid Combination for CR0".append(msg)
+        self.message = "Invalid Combination for CR0 ".append(msg)
         super().__init__(self.message)
 
 class AccessToReservedCr0Field(Exception):
     def __init__(self, field: int):
         self.field = field
         self.message = f"Bit field at idx {field} is reserved and shall not be modified"
+        super().__init__(self.message)
+
+class InvalidMsrIndex(Exception):
+    def __init__(self, idx: int):
+        self.idx = idx
+        self.message = f"Invalid MSR index: {idx}"
+        super().__init__(self.message)
+
+class AccessToReservedMsrIndex(Exception):
+    def __init__(self, msr_idx: int, bit_field: int):
+        self.msr_idx = msr_idx
+        self.bit_field = bit_field
+        self.message = f"Cannot change bit number {bit_field} of {msr_idx} MSR"
         super().__init__(self.message)
