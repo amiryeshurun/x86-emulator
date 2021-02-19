@@ -29,10 +29,12 @@ class PageTableEntry:
             self.large_page = bit_array[7]
         self.address = int.from_bytes(bit_array[12:].tobytes(), 'little') << 12
 
-def setup_default_paging(proc: Processor, memory: Memory):
-    # First validate that paging is required
-    if not proc.cr0.paging:
-        return
+class Paging:
+    def __init__(self, memory: Memory):
+        self.global_memory = memory
     
-def virtual_to_physical(proc: Processor, memory: Memory, virtual_address: int) -> int:
-    pass
+    def virtual_to_physical(proc: Processor, virtual_address: int) -> int:
+        
+
+    def get_memory(proc: Processor, virtual_address: int, length: int) -> bytearray:
+        

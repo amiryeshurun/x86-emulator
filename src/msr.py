@@ -1,6 +1,7 @@
 from enum import Enum
-from x86_exceptions import InvalidMsrIndex, AccessToReservedMsrIndex
+from x86_exceptions import InvalidMsrIndex, AccessToReservedMsrIndex, InvalidEferAccess
 from bitarray import bitarray
+import processor
 
 class MsrIndex(Enum):
     FIRST_RANGE_START = 0
@@ -12,11 +13,11 @@ class MsrIndex(Enum):
 
 class EferMsr:
     DEFAULT_INITIAL_VALUE = 0x1
-
-    def __init__(self, value=DEFAULT_INITIAL_VALUE):
-        self.configuration = { 0 : "system_call_extension", 1 : "data_fetch_enabled", 4 : "l2_cache_disabled", \
+    configuration = { 0 : "system_call_extension", 1 : "data_fetch_enabled", 4 : "l2_cache_disabled", \
                 8: "long_mode_enabled", 10 : "long_mode_active", 11 : "no_execute_enabled", \
                 13 : "long_mode_segment_limit_enabled" }
+    
+    def __init__(self, value=DEFAULT_INITIAL_VALUE):
         bit_array = bitarray(endian='little')
         bit_array.frombytes(value.to_bytes(4, 'little'))
         self.system_call_extension = bit_array[0]
@@ -28,18 +29,24 @@ class EferMsr:
         self.long_mode_segment_limit_enabled = bit_array[13]
         self.value = value
 
+    def validate_config(self, field_name: str, value: bool):
+        current_value = getattr(self, field_name)
+        if field_name == "long_mode_active" and value != self.long_mode_active:
+            raise InvalidEferAccess(field_name, value)
+
     def change_configuration(self, idx: int, value: bool):
         try:
-            field = self.configuration[idx]
+            field = configuration[idx]
         except:
             # Reserved fields
             if value != (self.value & (1 << idx)):
                 raise AccessToReservedMsrIndex(MsrIndex.IA32_EFER, idx)
+        self.validate_config(field, value)
         setattr(self, field, value)
 
     def get_field(self, idx: int) -> bool:
         try:
-            field = self.configuration[idx]
+            field = configuration[idx]
         except:
             return False
         return getattr(self, field_name) 
@@ -75,6 +82,6 @@ class Msr:
         elif MsrIndex.SECOND_RANGE_START <= key <= MsrIndex.SECOND_RANGE_MAX:
             self.msr_second_range[key] = value
         else:
-            InvalidMsrIndex(idx)
+            raise InvalidMsrIndex(idx)
 
         

@@ -37,3 +37,16 @@ class AccessToReservedMsrIndex(Exception):
         self.bit_field = bit_field
         self.message = f"Cannot change bit number {bit_field} of {msr_idx} MSR"
         super().__init__(self.message)
+
+class InvalidEferAccess(Exception):
+    def __init__(self, field_name: str, value: bool):
+        self.message = f"Cannot change field {field_name} to {value}"
+        super().__init__(self.message)
+
+class PageFault(Exception):
+    def __init__(self, is_minor: bool, virtual_address: int, address_length: int):
+        self.is_minor = is_minor
+        self.virtual_address = virtual_address
+        pf_type_str = "minor" if is_minor else "major"
+        self.message = f"A {pf_type_str} page-fault occured at {virtual_address:#0{address_length}x}"
+        super().__init__(self.message)

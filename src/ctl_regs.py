@@ -3,11 +3,11 @@ from bitarray import bitarray
 
 class Cr0:
     DEFAULT_INITIAL_VALUE = 0x0
-
-    def __init__(self):
-        self.configuration = { 0 : "protected_mode", 1 : "monitor_co_processor", 2 : "emulation", \
+    configuration = { 0 : "protected_mode", 1 : "monitor_co_processor", 2 : "emulation", \
                 3: "task_switched", 4 : "extension_type", 5 : "numeric_error", 16 : "write_protect", \
                 18 : "alignment_mask", 29 : "not_write_through", 30 : "cache_disable", 31 : "paging" }
+    
+    def __init__(self):
         self.protected_mode = False
         self.monitor_co_processor = False
         self.emulation = False
@@ -28,17 +28,17 @@ class Cr0:
 
     def change_configuration(self, idx: int, value: bool):
         try:
-            field_name = self.configuration[idx]
+            field_name = configuration[idx]
         except:
             # Reserved fields
             if value != (self.value & (1 << idx)):
                 raise AccessToReservedCr0Field(idx)
-        validate_config(field_name, value)
+        self.validate_config(field_name, value)
         setattr(self, value)
     
     def get_field(self, idx: int) -> bool:
         try:
-            field_name = self.configuration[idx]
+            field_name = configuration[idx]
         except:
             return False
         return getattr(self, field_name)
