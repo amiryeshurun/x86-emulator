@@ -1,4 +1,6 @@
-class Registers(Enum):
+from enum import IntEnum
+
+class Registers(IntEnum):
     REG_RAX = 0
     REG_RCX = 1
     REG_RDX = 2

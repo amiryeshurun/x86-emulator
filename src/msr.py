@@ -1,9 +1,13 @@
-from enum import Enum
-from x86_exceptions import InvalidMsrIndex, AccessToReservedMsrIndex, InvalidEferAccess
+# For type-hinting
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from processor import Processor
+from enum import IntEnum
+from x86_exceptions import InvalidMsrIndex, AccessToReservedMsrIndex, InvalidEferAccess, InvalidEferCombination
 from bitarray import bitarray
-import processor
 
-class MsrIndex(Enum):
+class MsrIndex(IntEnum):
     FIRST_RANGE_START = 0
     FIRST_RANGE_MAX = 0x1fff
     SECOND_RANGE_START = 0xc0000000
@@ -17,7 +21,7 @@ class EferMsr:
                 8: "long_mode_enabled", 10 : "long_mode_active", 11 : "no_execute_enabled", \
                 13 : "long_mode_segment_limit_enabled" }
     
-    def __init__(self, value=DEFAULT_INITIAL_VALUE):
+    def __init__(self, proc: Processor, value=0x1):
         bit_array = bitarray(endian='little')
         bit_array.frombytes(value.to_bytes(4, 'little'))
         self.system_call_extension = bit_array[0]
@@ -27,16 +31,19 @@ class EferMsr:
         self.long_mode_active = bit_array[10]
         self.no_execute_enabled = bit_array[11]
         self.long_mode_segment_limit_enabled = bit_array[13]
+        self.processor = proc
         self.value = value
 
     def validate_config(self, field_name: str, value: bool):
         current_value = getattr(self, field_name)
         if field_name == "long_mode_active" and value != self.long_mode_active:
             raise InvalidEferAccess(field_name, value)
+        elif field_name == "long_mode_enabled" and not self.processor.cr0.protected_mode:
+            raise InvalidEferCombination(field_name, value, self.processor.cr0.value)
 
     def change_configuration(self, idx: int, value: bool):
         try:
-            field = configuration[idx]
+            field = EferMsr.configuration[idx]
         except:
             # Reserved fields
             if value != (self.value & (1 << idx)):
@@ -46,7 +53,7 @@ class EferMsr:
 
     def get_field(self, idx: int) -> bool:
         try:
-            field = configuration[idx]
+            field = EferMsr.configuration[idx]
         except:
             return False
         return getattr(self, field_name) 
@@ -58,8 +65,6 @@ class EferMsr:
             self.change_configuration(i, bit_array[i])
         self.value = value
     
-    def get_value(self) -> int:
-        return self.value
 
 class Msr:
     def __init__(self):
@@ -67,20 +72,20 @@ class Msr:
         self.msr_first_range = 0x1fff * [None]
         self.msr_second_range = 0x1fff * [None]
         # Create the actual MSR values
-        self.msr_first_range[MsrIndex.IA32_EFER] = EferMsr.DEFAULT_INITIAL_VALUE
+        self[MsrIndex.IA32_EFER] = EferMsr.DEFAULT_INITIAL_VALUE
     
     def __getitem__(self, key):
         if MsrIndex.FIRST_RANGE_START <= key <= MsrIndex.FIRST_RANGE_MAX:
             return self.msr_first_range[key]
         elif MsrIndex.SECOND_RANGE_START <= key <= MsrIndex.SECOND_RANGE_MAX:
-            return self.msr_second_range[key]
+            return self.msr_second_range[key - MsrIndex.SECOND_RANGE_START]
         raise InvalidMsrIndex(idx)
     
     def __setitem__(self, key, value):
         if MsrIndex.FIRST_RANGE_START <= key <= MsrIndex.FIRST_RANGE_MAX:
             self.msr_first_range[key] = value
         elif MsrIndex.SECOND_RANGE_START <= key <= MsrIndex.SECOND_RANGE_MAX:
-            self.msr_second_range[key] = value
+            self.msr_second_range[key - MsrIndex.SECOND_RANGE_START] = value
         else:
             raise InvalidMsrIndex(idx)
 

@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import IntEnum
 
 # No support for XMM/YMM registers, yet
 MAX_ALLOWED_READ_SIZE = 8
@@ -9,7 +9,7 @@ TWO_MB_LARGE_PAGE_SIZE = 0x200000
 # Default PML4 will reside in this address
 DEFAULT_PG_ADDRESS = 0x1000
 
-class PageTableEntryType(Enum):
+class PageTableEntryType(IntEnum):
     PTE = 0
     PDE = 1
     PDPTE = 2
