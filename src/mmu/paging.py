@@ -25,7 +25,7 @@ class PageTableEntry:
         if page_type == PageTableEntryType.PTE:
             self.dirty = bit_array[6]
             self.glob = bit_array[8]
-        if page_type in [PageTableEntryType.PDE, PageTableEntryType.PDPTE]:
+        elif page_type in [PageTableEntryType.PDE, PageTableEntryType.PDPTE]:
             self.large_page = bit_array[7]
         self.address = int.from_bytes(bit_array[12:].tobytes(), 'little') << 12
 
@@ -34,7 +34,7 @@ class Paging:
         self.global_memory = memory
     
     def virtual_to_physical(proc: Processor, virtual_address: int) -> int:
-        
+        pass
 
     def get_memory(proc: Processor, virtual_address: int, length: int) -> bytearray:
-        
+        pass

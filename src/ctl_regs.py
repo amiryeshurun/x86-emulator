@@ -19,7 +19,7 @@ class Cr0:
         self.not_write_through = False
         self.cache_disable = False
         self.paging = False
-        self.value = DEFAULT_INITIAL_VALUE
+        self.value = Cr0.DEFAULT_INITIAL_VALUE
     
     def validate_config(self, field_name: str, value: bool):
         current_value = getattr(self, field_name)
@@ -28,7 +28,7 @@ class Cr0:
 
     def change_configuration(self, idx: int, value: bool):
         try:
-            field_name = configuration[idx]
+            field_name = Cr0.configuration[idx]
         except:
             # Reserved fields
             if value != (self.value & (1 << idx)):
@@ -38,7 +38,7 @@ class Cr0:
     
     def get_field(self, idx: int) -> bool:
         try:
-            field_name = configuration[idx]
+            field_name = Cr0.configuration[idx]
         except:
             return False
         return getattr(self, field_name)
@@ -50,5 +50,3 @@ class Cr0:
             self.change_configuration(i, bit_array[i])
         self.value = value
     
-    def get_value(self) -> int:
-        return self.value

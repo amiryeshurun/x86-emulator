@@ -38,6 +38,13 @@ class AccessToReservedMsrIndex(Exception):
         self.message = f"Cannot change bit number {bit_field} of {msr_idx} MSR"
         super().__init__(self.message)
 
+class InvalidEferCombination(Exception):
+    def __init__(self, field_name: str, value: bool, ext: int):
+        self.field_name = field_name
+        self.value = value
+        self.message = f"""Invalid combination for field {field_name}, value {value}. 
+            Conflicts with: {ext:#0{4}x}"""
+
 class InvalidEferAccess(Exception):
     def __init__(self, field_name: str, value: bool):
         self.message = f"Cannot change field {field_name} to {value}"

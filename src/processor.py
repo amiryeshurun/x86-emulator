@@ -17,4 +17,4 @@ class Processor:
         self.paging = mmu.paging.Paging(memory)
     
     def is_long_mode_active(self) -> bool:
-        return msr.EferMsr(self.msr[msr.MsrIndex.IA32_EFER]).long_mode_active
+        return msr.EferMsr(self, self.msr[msr.MsrIndex.IA32_EFER]).long_mode_active
