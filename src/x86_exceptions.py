@@ -57,3 +57,8 @@ class PageFault(Exception):
         pf_type_str = "minor" if is_minor else "major"
         self.message = f"A {pf_type_str} page-fault occured at {virtual_address:#0{address_length}x}"
         super().__init__(self.message)
+
+class SegmentNotPresent(Exception):
+    def __init__(self, segment: str):
+        self.message = f"Segment {segment} is not present"
+        super().__init__(self.message) 
