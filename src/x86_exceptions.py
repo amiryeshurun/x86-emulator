@@ -2,6 +2,12 @@
  This exception is thrown if the emulator tries to read a value bigger than
  the allowed maximum
 """
+# For type-hinting
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from processor import ProcessorMode
+
 class InvalidReadSize(Exception):
     def __init__(self, size: int):
         self.offset = size
@@ -61,4 +67,17 @@ class PageFault(Exception):
 class SegmentNotPresent(Exception):
     def __init__(self, segment: str):
         self.message = f"Segment {segment} is not present"
-        super().__init__(self.message) 
+        super().__init__(self.message)
+
+class InvalidProcessorMode(Exception):
+    def __init__(self, mode: ProcessorMode):
+        self.message = f"Unknown processor mode code: {int(mode)}"
+        super().__init__(self.message)
+
+class PriviledgeLevelNotAvailable:
+    REASON_REAL_MODE = 0
+    def __init__(self, reason: int):
+        self.message = f"CPL is not accessible. Reason: "
+        if reason == PriviledgeLevelNotAvailable.REASON_REAL_MODE:
+            self.message.append("Priviledge level is not available when running in real-mode.")
+        super().__init__(self.message)
