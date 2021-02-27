@@ -49,4 +49,39 @@ class Cr0:
         for i in range(0, len(bit_array)):
             self.change_configuration(i, bit_array[i])
         self.value = value
+
+class Cr4:
+    DEFAULT_INITIAL_VALUE = 0x0
+    configuration = { 4 : "page_size_extension", 5 : "physical_address_extension" }
     
+    def __init__(self):
+        self.page_size_extension = False
+        self.physical_address_extension = False
+        self.value = Cr4.DEFAULT_INITIAL_VALUE
+    
+    def validate_config(self, field_name: str, value: bool):
+        pass
+
+    def change_configuration(self, idx: int, value: bool):
+        try:
+            field_name = Cr0.configuration[idx]
+        except:
+            # Reserved fields
+            if value != (self.value & (1 << idx)):
+                raise AccessToReservedCr0Field(idx)
+        self.validate_config(field_name, value)
+        setattr(self, value)
+    
+    def get_field(self, idx: int) -> bool:
+        try:
+            field_name = Cr0.configuration[idx]
+        except:
+            return False
+        return getattr(self, field_name)
+    
+    def set_value(self, value: int):
+        bit_array = bitarray(endian='little')
+        bit_array.frombytes(value.to_bytes(4, 'little'))
+        for i in range(0, len(bit_array)):
+            self.change_configuration(i, bit_array[i])
+        self.value = value

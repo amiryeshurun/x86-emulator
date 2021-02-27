@@ -79,5 +79,5 @@ class PriviledgeLevelNotAvailable:
     def __init__(self, reason: int):
         self.message = f"CPL is not accessible. Reason: "
         if reason == PriviledgeLevelNotAvailable.REASON_REAL_MODE:
-            self.message.append("Priviledge level is not available when running in real-mode.")
+            self.message += "Priviledge level is not available when running in real-mode."
         super().__init__(self.message)
