@@ -7,6 +7,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from processor import ProcessorMode
+    from instructions.instruction import Opcodes
 
 class InvalidReadSize(Exception):
     def __init__(self, size: int):
@@ -77,7 +78,24 @@ class InvalidProcessorMode(Exception):
 class PriviledgeLevelNotAvailable:
     REASON_REAL_MODE = 0
     def __init__(self, reason: int):
-        self.message = f"CPL is not accessible. Reason: "
+        self.message = "CPL is not accessible. Reason: "
         if reason == PriviledgeLevelNotAvailable.REASON_REAL_MODE:
             self.message += "Priviledge level is not available when running in real-mode."
+        super().__init__(self.message)
+
+class Unimplemented(Exception):
+     def __init__(self):
+        self.message = "UNIMPLEMENTED"
+        super().__init__(self.message)
+
+class InvalidOpcode(Exception):
+    def __init__(self, opcode: Opcodes):
+        self.opcode = int(opcode)
+        self.message = f"Invalid opcode ::: {opcode}"
+        super().__init__(self.message)
+
+class InvalidInstructionCode(Exception):
+    def __init__(self, instruction_code: InstructionCodes):
+        self.code = instruction_code
+        self.message = f"Invalid instruction code ::: {instruction_code}"
         super().__init__(self.message)
