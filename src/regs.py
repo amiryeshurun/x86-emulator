@@ -1,5 +1,7 @@
 from enum import IntEnum
 
+GP_REGISTERS_COUNT = 16
+
 class Registers(IntEnum):
     REG_RAX = 0
     REG_RCX = 1

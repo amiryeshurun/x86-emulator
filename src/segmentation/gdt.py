@@ -11,4 +11,5 @@ class Gdt:
     
     def load_gdt(self, proc: Processor, operand: int):
         pass
+    
 
