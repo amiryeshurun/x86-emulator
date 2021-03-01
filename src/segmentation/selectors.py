@@ -1,6 +1,14 @@
 from enum import IntEnum
 from bitarray import bitarray
 
+class Segments(IntEnum):
+    CS = 0
+    DS = 1
+    ES = 2
+    SS = 3
+    GS = 4
+    FS = 5
+
 class Selector:
     def __init__(self, value: int):
         self.set_new_value(value)
@@ -17,8 +25,11 @@ NUM_SELECTORS = 6
 
 class Selectors(IntEnum):
     SELECTOR_CS = 0
-    SELECTOR_DS = 0
-    SELECTOR_ES = 0
-    SELECTOR_SS = 0
-    SELECTOR_GS = 0
-    SELECTOR_FS = 0
+    SELECTOR_DS = 1
+    SELECTOR_ES = 2
+    SELECTOR_SS = 3
+    SELECTOR_GS = 4
+    SELECTOR_FS = 5
+
+def segment_to_selector_index(segment: Segments) -> Selectors:
+    return int(segment)

@@ -82,6 +82,21 @@ class Processor:
         # Currently unimplemented
         raise Unimplemented
 
+    def read_memory(
+        self, address: int, length: int, segment=segmentation.selectors.Segments.DS
+        ) -> bytearray:
+        if self.is_in_real_mode():
+            return self.memory.read_physical_mem(
+                self.selectors[segmentation.selectors.segment_to_selector_index(segment)].value << 4 +
+                address, length
+                )
+        raise Unimplemented
+
+    def get_current_instruction_address(self) -> int:
+        if self.is_in_real_mode():
+            return self.rip
+        raise Unimplemented
+
     def start_execution(self):
         exec_mode_to_decoder = {
             ExecutionMode.EXEC_16 : decoder.decode_16

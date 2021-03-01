@@ -7,7 +7,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from processor import ProcessorMode
-    from instructions.instruction import Opcodes
+    from instructions.instruction import Opcodes, PrefixTypes
+
 
 class InvalidReadSize(Exception):
     def __init__(self, size: int):
@@ -90,12 +91,19 @@ class Unimplemented(Exception):
 
 class InvalidOpcode(Exception):
     def __init__(self, opcode: Opcodes):
-        self.opcode = int(opcode)
-        self.message = f"Invalid opcode ::: {opcode}"
+        self.opcode = opcode.value
+        self.message = f"Invalid opcode ::: {opcode.value}"
         super().__init__(self.message)
 
 class InvalidInstructionCode(Exception):
     def __init__(self, instruction_code: InstructionCodes):
         self.code = instruction_code
         self.message = f"Invalid instruction code ::: {instruction_code}"
+        super().__init__(self.message)
+
+class UnorderedPrefixList(Exception):
+    def __init__(self, prev: PrefixTypes, current: PrefixTypes):
+        self.prev = prev.value
+        self.current = current.value
+        self.message = f"Unordered prefix types: {prev.value} cannot be before {current.value}"
         super().__init__(self.message)
