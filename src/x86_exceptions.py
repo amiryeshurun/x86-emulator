@@ -90,13 +90,13 @@ class Unimplemented(Exception):
         super().__init__(self.message)
 
 class InvalidOpcode(Exception):
-    def __init__(self, opcode: Opcodes):
-        self.opcode = opcode.value
-        self.message = f"Invalid opcode ::: {opcode.value}"
+    def __init__(self, opcode: int):
+        self.opcode = opcode
+        self.message = f"Invalid opcode ::: {opcode}"
         super().__init__(self.message)
 
 class InvalidInstructionCode(Exception):
-    def __init__(self, instruction_code: InstructionCodes):
+    def __init__(self, instruction_code: int):
         self.code = instruction_code
         self.message = f"Invalid instruction code ::: {instruction_code}"
         super().__init__(self.message)

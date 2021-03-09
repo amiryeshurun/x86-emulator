@@ -29,6 +29,8 @@ def decode_16(proc: Processor):
     instruction_size = 1
     instruction = proc.read_memory(instruction_address, 1, Segments.CS)
     prefix_list = []
+    opcode_expansion = False
+    instruction_code = 0
     # First check if there is an instruction prefix
     while True:
         prefix_type, prefix = check_for_prefix(instruction)
@@ -37,7 +39,7 @@ def decode_16(proc: Processor):
             if len(prefix_list) > 0 and prefix_list[-1][0] > prefix_type:
                 raise UnorderedPrefixList(prefix_list[-1][0], prefix_type)
             # Add to list of prefixes
-            prefix_list.append([prefix_type, prefix])
+            prefix_list.append((prefix_type, prefix))
             # Next byte
             offset_from_beginning += 1
             # Increment size
@@ -48,6 +50,23 @@ def decode_16(proc: Processor):
         else:
             break
     # Now 'instruction' contains the first byte of the opcode
+    # Is this an opcode expansion?
+    if int(instruction[0]) == X86_OPCODE_EXPANSION:
+        # Skip
+        offset_from_beginning += 1
+        instruction_size += 1
+        instruction = proc.read_memory(instruction_address + offset_from_beginning,
+        1, Segments.CS)
+        opcode_expansion = True
+    # Now the real opcode is referenced by "instruction"
+    # Check if the opcode is supported
+    try:
+        instruction_code = opcode_to_instruction_code[int(instruction[0])]
+    except:
+        raise InvalidOpcode(int(instruction[0]))
+    
+
+
 
 def decode_32(proc: Processor):
     raise Unimplemented

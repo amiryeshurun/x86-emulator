@@ -8,6 +8,8 @@ from enum import IntEnum
 from typing import Type, Dict
 from x86_exceptions import InvalidOpcode, InvalidInstructionCode
 
+X86_OPCODE_EXPANSION = 0xF0
+
 class InstructionCodes(IntEnum):
     MOV_RM8_R8 = 0
     ADD_RM8_R8 = 1
